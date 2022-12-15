@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 
 const { features: wards } = data as any;
 
+// Kiểm tra 1 đường thẳng cắt 1 đoạn thẳng bằng PT y = ax + b;
 const lineIntersectSegment = (line: any, segment: any) => {
   const a =
     (line.endPoint.latitude - line.startPoint.latitude) /
@@ -20,6 +21,7 @@ const lineIntersectSegment = (line: any, segment: any) => {
   return startPointUpper !== endPointUpper;
 };
 
+// kiểm tra chéo giữa 2 đoạn thẳng
 const segmentsIntersect = (segment1: any, segment2: any) => {
   return (
     lineIntersectSegment(segment1, segment2) &&
@@ -27,6 +29,7 @@ const segmentsIntersect = (segment1: any, segment2: any) => {
   );
 };
 
+// Kiểm tra một vị trí có nằm trong polygon không
 const positionInPolygon = (position: any, polygons: any) => {
   const checkPoint = {
     latitude: 0,
