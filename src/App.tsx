@@ -94,6 +94,7 @@ const getAddress = (latitude: number, longitude: number) => {
 function App() {
   const [address, setAddress] = useState('');
   const [addressRandom, setAddressRandom] = useState('');
+  const [latLng, setLatLng] = useState<any>();
 
   const refInputLat: any = useRef();
   const refInputLng: any = useRef();
@@ -109,6 +110,10 @@ function App() {
         setAddress(
           `${foundWard.properties.NAME_3} - ${foundWard.properties.NAME_2} - ${foundWard.properties.NAME_1}`
         );
+      setLatLng({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
     },
     onGetGeoError: (err) => {
       console.log(err);
@@ -122,10 +127,15 @@ function App() {
     if (lat && lng) {
       const foundWard = getAddress(parseFloat(lat), parseFloat(lng));
 
-      if (foundWard)
+      if (foundWard) {
         setAddressRandom(
           `${foundWard.properties.NAME_3} - ${foundWard.properties.NAME_2} - ${foundWard.properties.NAME_1}`
         );
+        setLatLng({
+          lat: parseFloat(lat),
+          lng: parseFloat(lng),
+        });
+      }
     }
   };
 
@@ -157,6 +167,17 @@ function App() {
 
         <h3>Random address: {addressRandom || ''}</h3>
       </div>
+
+      {latLng && (
+        <h3>
+          <a
+            href={`http://maps.google.com/maps?q=loc:${latLng.lat},${latLng.lng}`}
+            target='_blank'
+          >
+            Go to map
+          </a>
+        </h3>
+      )}
     </div>
   );
 }
