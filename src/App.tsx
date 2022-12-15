@@ -82,6 +82,12 @@ const getAddress = (latitude: number, longitude: number) => {
     )
   );
 
+  const isHasMultipolygon = data?.find(
+    (it: any) => it?.geometry?.type === 'MultiPolygon'
+  );
+
+  if (isHasMultipolygon) return isHasMultipolygon;
+
   return data?.[data?.length - 1];
 };
 
