@@ -6,20 +6,62 @@ import { useRef, useState } from 'react';
 const { features: wards } = data as any;
 
 // Kiểm tra 1 đường thẳng cắt 1 đoạn thẳng bằng PT y = ax + b;
-const lineIntersectSegment = (line: any, segment: any) => {
-  const a =
-    (line.endPoint.latitude - line.startPoint.latitude) /
-    (line.endPoint.longitude - line.startPoint.longitude);
+function lineIntersectSegment(line: any, segment: any) {
+  const {
+    startPoint: { latitude: x1, longitude: y1 },
+    endPoint: { latitude: x2, longitude: y2 },
+  } = line;
+  const {
+    startPoint: { latitude: x3, longitude: y3 },
+    endPoint: { latitude: x4, longitude: y4 },
+  } = segment;
+  // Calculate the slopes of the two lines
+  const slope1 = (y2 - y1) / (x2 - x1);
+  const slope2 = (y4 - y3) / (x4 - x3);
 
-  const b = line.endPoint.latitude - a * line.endPoint.longitude;
+  // If the slopes are equal, the lines are parallel and do not intersect
+  if (slope1 === slope2) {
+    return false;
+  }
 
-  const startPointUpper =
-    segment.startPoint.latitude > a * segment.startPoint.longitude + b;
-  const endPointUpper =
-    segment.endPoint.latitude > a * segment.endPoint.longitude + b;
+  // Calculate the y-intercepts of the two lines
+  const yIntercept1 = y1 - slope1 * x1;
+  const yIntercept2 = y3 - slope2 * x3;
 
-  return startPointUpper !== endPointUpper;
-};
+  // If the y-intercepts are equal, the lines are coincident and intersect at every point
+  if (yIntercept1 === yIntercept2) {
+    return true;
+  }
+
+  // Calculate the x-coordinate of the intersection point
+  const x = (yIntercept2 - yIntercept1) / (slope1 - slope2);
+
+  // Calculate the y-coordinate of the intersection point
+  const y = slope1 * x + yIntercept1;
+
+  // Check if the intersection point falls within the range of both line segments
+  return (
+    ((x1 <= x && x <= x2) || (x2 <= x && x <= x1)) &&
+    ((x3 <= x && x <= x4) || (x4 <= x && x <= x3)) &&
+    ((y1 <= y && y <= y2) || (y2 <= y && y <= y1)) &&
+    ((y3 <= y && y <= y4) || (y4 <= y && y <= y3))
+  );
+}
+
+// const lineIntersectSegment = (line: any, segment: any) => {
+//   const a =
+//     (line.endPoint.latitude - line.startPoint.latitude) /
+//     (line.endPoint.longitude - line.startPoint.longitude);
+
+//   const b = line.endPoint.latitude - a * line.endPoint.longitude;
+
+//   const startPointUpper =
+//     segment.startPoint.latitude > a * segment.startPoint.longitude + b;
+//   const endPointUpper =
+//     segment.endPoint.latitude > a * segment.endPoint.longitude + b;
+
+//   return startPointUpper !== endPointUpper;
+// };
 
 // kiểm tra chéo giữa 2 đoạn thẳng
 const segmentsIntersect = (segment1: any, segment2: any) => {
@@ -75,7 +117,7 @@ const positionInWard = (position: any, ward: any) => {
 };
 
 const getAddress = (latitude: number, longitude: number) => {
-  const data: any = wards.filter((ward: any) =>
+  const data: any = wards.find((ward: any) =>
     positionInWard(
       {
         latitude: latitude,
@@ -85,13 +127,7 @@ const getAddress = (latitude: number, longitude: number) => {
     )
   );
 
-  const isHasMultipolygon = data?.find(
-    (it: any) => it?.geometry?.type === 'MultiPolygon'
-  );
-
-  if (isHasMultipolygon) return isHasMultipolygon;
-
-  return data?.[data?.length - 1];
+  return data;
 };
 
 function App() {
