@@ -1,9 +1,7 @@
-import data from './assets/vietnam.json';
+import dataFormat from './assets//vietnam-format.json';
 import './App.css';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useRef, useState } from 'react';
-
-const { features: wards } = data as any;
 
 // Kiểm tra 1 đường thẳng cắt 1 đoạn thẳng bằng PT y = ax + b;
 function lineIntersectSegment(line: any, segment: any) {
@@ -103,21 +101,31 @@ const positionInPolygon = (position: any, polygons: any) => {
   return count % 2 !== 0;
 };
 
-const positionInWard = (position: any, ward: any) => {
-  const polygons =
-    ward.geometry.type == 'Polygon'
-      ? [ward.geometry.coordinates]
-      : ward.geometry.coordinates;
+const polygonInBox = (position: any, bbox: any) => {
+  return (
+    position.lat >= bbox.minLat &&
+    position.lat <= bbox.maxLat &&
+    position.long >= bbox.minLong &&
+    position.long <= bbox.maxLong
+  );
+};
 
-  const positionInWardCheck = polygons.some((polygon: any) => {
-    return positionInPolygon(position, polygon[0]);
+const positionInWard = (position: any, ward: any) => {
+  const positionInWardCheck = ward.polygons.some((polygon: any) => {
+    return positionInPolygon(position, polygon);
   });
 
   return positionInWardCheck;
 };
 
 const getAddress = (latitude: number, longitude: number) => {
-  const data: any = wards.find((ward: any) =>
+  const posibleWards = (dataFormat as any[])?.filter((ward: any) =>
+    polygonInBox({ lat: latitude, long: longitude }, ward.bbox)
+  );
+
+  if (posibleWards?.length === 1) return posibleWards?.[0];
+
+  const data: any = posibleWards.find((ward: any) =>
     positionInWard(
       {
         latitude: latitude,
@@ -147,7 +155,7 @@ function App() {
 
       if (foundWard)
         setAddress(
-          `${foundWard.properties.NAME_3} - ${foundWard.properties.NAME_2} - ${foundWard.properties.NAME_1}`
+          `${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
         );
       setLatLng({
         lat: position.coords.latitude,
@@ -166,15 +174,14 @@ function App() {
     if (lat && lng) {
       const foundWard = getAddress(parseFloat(lat), parseFloat(lng));
 
-      if (foundWard) {
+      if (foundWard)
         setAddressRandom(
-          `${foundWard.properties.NAME_3} - ${foundWard.properties.NAME_2} - ${foundWard.properties.NAME_1}`
+          `${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
         );
-        setLatLng({
-          lat: parseFloat(lat),
-          lng: parseFloat(lng),
-        });
-      }
+      setLatLng({
+        lat,
+        lng,
+      });
     }
   };
 
