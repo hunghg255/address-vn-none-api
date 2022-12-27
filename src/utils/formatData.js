@@ -1,4 +1,4 @@
-const data = require('./vietnam.json');
+const data = require('../assets/vietnam.json');
 
 const { features: wards } = data;
 const fs = require('fs');

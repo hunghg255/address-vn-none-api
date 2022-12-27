@@ -9,7 +9,9 @@
 
 3. Export file json like below image
 
-4. Load resource on code
+4. Run file /utils/formatData.js, create bounding box
+
+5. Load resource on code
 
 ```
 
