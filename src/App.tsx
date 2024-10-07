@@ -2,6 +2,7 @@ import './App.css';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useRef, useState } from 'react';
 import { getAddress } from './utils';
+import { toast } from 'sonner';
 
 function App() {
   const [address, setAddress] = useState('');
@@ -19,8 +20,9 @@ function App() {
       );
 
       if (foundWard)
+
         setAddress(
-          `${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
+          `${foundWard.type} ${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
         );
       setLatLng({
         lat: position.coords.latitude,
@@ -39,14 +41,20 @@ function App() {
     if (lat && lng) {
       const foundWard = getAddress(parseFloat(lat), parseFloat(lng));
 
-      if (foundWard)
+      if (foundWard) {
         setAddressRandom(
-          `${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
+          `${foundWard.type} ${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
         );
+      } else {
+        toast.error('Not found address');
+      }
+
       setLatLng({
         lat,
         lng,
       });
+    } else {
+      toast.error('Please input latitude and longitude');
     }
   };
 

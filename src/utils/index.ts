@@ -1,4 +1,4 @@
-import dataFormat from '../assets//vietnam-format.json';
+import dataFormat from '../assets/vietnam-format.json';
 
 // Kiểm tra 1 đường thẳng cắt 1 đoạn thẳng bằng PT y = ax + b;
 function lineIntersectSegment(line: any, segment: any) {

@@ -1,7 +1,8 @@
-const data = require('../assets/vietnam.json');
+//@ts-nocheck
+import data from '../assets/vietnam.json';
+import fs from 'fs';
 
 const { features: wards } = data;
-const fs = require('fs');
 
 // Bounding box
 const getBox = (polygons) => {
@@ -48,7 +49,7 @@ const wardsFormat = wards.map((ward) => {
 });
 
 try {
-  fs.writeFileSync('./vietnam-format.json', JSON.stringify(wardsFormat));
+  fs.writeFileSync('./src/assets/vietnam-format.json', JSON.stringify(wardsFormat));
   //file written successfully
 } catch (err) {
   console.error(err);
