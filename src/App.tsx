@@ -1,7 +1,7 @@
 import './App.css';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useRef, useState } from 'react';
-import { getAddress } from './utils';
+import { formatAddress, getAddress } from './utils';
 import { toast } from 'sonner';
 
 function App() {
@@ -19,11 +19,13 @@ function App() {
         position.coords.longitude
       );
 
-      if (foundWard)
+      if (foundWard) {
+        setAddress(formatAddress(foundWard));
+      } else {
+        setAddress('');
+        toast.error('Not found address');
+      }
 
-        setAddress(
-          `${foundWard.type} ${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
-        );
       setLatLng({
         lat: position.coords.latitude,
         lng: position.coords.longitude,
@@ -42,10 +44,9 @@ function App() {
       const foundWard = getAddress(parseFloat(lat), parseFloat(lng));
 
       if (foundWard) {
-        setAddressRandom(
-          `${foundWard.type} ${foundWard.name} - ${foundWard.district} - ${foundWard.provice}`
-        );
+        setAddressRandom(formatAddress(foundWard));
       } else {
+        setAddressRandom('');
         toast.error('Not found address');
       }
 
@@ -61,6 +62,7 @@ function App() {
   return (
     <div className='App'>
       <h1>Vietnam Address</h1>
+      <p>Đơn vị hành chính 2 cấp - 34 tỉnh/thành</p>
       <div>
         <button onClick={getGeoLocation} disabled={geoLocationLoading}>
           Get Current

@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Raw GeoJSON source (rất lớn, tải lại từ https://gis.vn/don-vi-hanh-chinh-viet-nam)
+src/assets/*.geojson
